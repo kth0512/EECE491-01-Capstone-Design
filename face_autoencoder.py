@@ -23,13 +23,15 @@ class FaceAutoencoder(nn.Module):
         self.fc_decode = nn.Linear(latent_dim, 512 * 4 * 4)
 
         # Transposed Convolution: Gradually extending the size
+        
         self.decoder_cnn = nn.Sequential(
             nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1), nn.ReLU(), nn.BatchNorm2d(256), # -> 8x8
             nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1), nn.ReLU(), nn.BatchNorm2d(128), # -> 16x16
             nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),  nn.ReLU(), nn.BatchNorm2d(64),  # -> 32x32
             nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1),   nn.ReLU(), nn.BatchNorm2d(32),  # -> 64x64
-            nn.ConvTranspose2d(32, 3, kernel_size=4, stride=2, padding=1),    nn.Tanh()                       # -> 128x128 (-1, 1) range normalization
+            nn.ConvTranspose2d(32, 3, kernel_size=4, stride=2, padding=1),    nn.Tanh()                       # -> 128x128
         )
+
 
     def forward(self, x):
         x = self.encode(x)
