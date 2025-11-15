@@ -4,7 +4,6 @@ import torchvision.models as models
 
 class FaceAutoencoder(nn.Module):
     def __init__(self, latent_dim=256, image_size=128):
-        # At first, initialize with __init__() from super class
         super(FaceAutoencoder, self).__init__()
 
         # Encoder: Pretrained ResNet-18
@@ -12,18 +11,12 @@ class FaceAutoencoder(nn.Module):
         # Obtain feature map
         modules = list(resnet.children())[:-2]
 
-        # Feature Extractor
+
         self.encoder_cnn = nn.Sequential(*modules)
-        # Average Pooling -> Why we need to do this? (study later)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        # Compress information
         self.fc_encode = nn.Linear(resnet.fc.in_features, latent_dim)
-
-        #  Decoder: Transposed Convolution
-        self.fc_decode = nn.Linear(latent_dim, 512 * 4 * 4)
-
-        # Transposed Convolution: Gradually extending the size
         
+        self.fc_decode = nn.Linear(latent_dim, 512 * 4 * 4)
         self.decoder_cnn = nn.Sequential(
             nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1), nn.ReLU(), nn.BatchNorm2d(256), # -> 8x8
             nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1), nn.ReLU(), nn.BatchNorm2d(128), # -> 16x16
